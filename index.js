@@ -1,11 +1,12 @@
 require("dotenv").config();
 
-const express = require("express");
-const app = express();
-const http = require("http");
-const server = http.createServer(app);
+const express = require("express"); //Require express module
+const app = express();  //Call express() and puts new express application in app variable
 
-const PORT = process.env.PORT || 8000;
+const http = require("http"); //require http - built in node module
+const server = http.createServer(app);  //create http server for repeated use e.g. for socket.io
+
+const PORT = process.env.PORT || 8000;  //Set default port
 
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Success" });
