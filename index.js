@@ -19,16 +19,38 @@ const io = new Server({   //constructor function for new server-side instance "i
   }
 });
 
-
 //CORS middleware
 app.use(cors());
-
 
 //Home Route
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Success" });
 });
 
+//WebSocket: bi-directional full-duplex protocol for client-server comms.
+//Stateful protocol, meaning connxn kept alive until terminated by either client or server
+//After closing connxn, connxn termianted from both ends
+//Client makes request --> Server returns handshake --> WebSocket connxn established
+
+//socket.io
+io.on('connection', (socket) => { //Callback provides socket
+  //Emit message from socket
+  socket.emit('myMsg', socket.id) //Connection named 'myMsg', pass in socket id for frontend
+  //Disconnect socket handler
+  socket.on('disconnect', () => {
+    socket.broadcast.emit('callEnded'); //Broadcast:
+  })
+  //Call User Socket Handler
+  socket.on('calluser', ({ userToCall, signalData, from, name }) => {   //Destructed from incoming data
+    io.to(userToCall).emit('calluser', { signal: signalData, from, name });
+  })
+  //Answer Call Socket Handler
+  socket.on('answercall', (data) => {
+    io.to(data.to).emit('callaccepted', data.signal);
+  })
+});
+
+//Listen in on server
 server.listen(PORT, () => {
   console.log(`Server listening on PORT: ${PORT}`);
 });
