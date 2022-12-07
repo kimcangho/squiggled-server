@@ -4,7 +4,7 @@
   "description": "Kent Ho - Capstone - Server Back-end",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon index.js"
+    "dev": "nodemon server.js"
   },
   "repository": {
     "type": "git",
