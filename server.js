@@ -1,22 +1,19 @@
 //.env
 require("dotenv").config();
 const PORT = process.env.PORT || 8000;
-//Modules
-const cors = require("cors");
+//External Modules
 const express = require("express");
+//Spin up server
 const http = require("http");
 const app = express();
 const server = http.createServer(app);
-
 const io = require("socket.io")(server, {
-	cors: {
-		origin: "*",
-		methods: [ "GET", "POST" ]
-	}
+    //Use cors middleware
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
 });
-
-//allow cors
-app.use(cors());
 
 //List users in object - order not important
 const users = {};
@@ -24,18 +21,18 @@ const users = {};
 //Video Chat App
 //Listen On Connection from client
 io.on("connection", (socket) => {
-//   console.log(socket);
-//   console.log(socket.id);
-  console.log(`User connected on socket: ${socket.id}`);
   //Check if user has id
   if (!users[socket.id]) {
     users[socket.id] = socket.id; //Add user with unique socket id
   }
-
   //emit yourID event with socket ID
   socket.emit("yourID", socket.id);
-
-  //emit sockets
+  //emit users object containing all users
+  io.sockets.emit("allUsers", users);
+  //Listen on disconnect event from user to delete from users object
+  socket.on("disconnect", () => {
+    delete users[socket.id];
+  });
 });
 
 // //Chat app
