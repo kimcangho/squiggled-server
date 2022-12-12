@@ -24,34 +24,15 @@ const activeSessions = [];
 io.on("connection", (socket) => {
   //Test
   console.log(`User connected: ${socket.id}`);
-  socket.on("send message", (data) => {
-    socket.broadcast.emit("receive message", data);
-  });
 
   //Send socketid
   socket.emit("me", socket.id);
   //Send activeSessions list
   socket.emit("getActiveSessions", activeSessions);
-  //Notify all other users
-  socket.broadcast.emit("userOnline", `New user online: ${socket.id}`);
   //Disconnect
   socket.on("disconnect", () => {
     socket.emit("call has ended");
   });
-
-  //Call a user
-  // socket.on("callUser", (data) => {
-  //   io.to(data.userToCall).emit("callUser", {
-  //     signal: data.signalData,
-  //     from: data.from,
-  //     name: data.name,
-  //   });
-  // });
-
-  // //Answer call
-  // socket.on("answerCall", (data) => {
-  //   io.to(data.to).emit("call accepted", data.signal);
-  // });
 
   //Creating a session
   socket.on("create_session", (data) => {
@@ -65,7 +46,6 @@ io.on("connection", (socket) => {
     socket.join(data); //Creates room
     io.emit("getActiveSessions", activeSessions);
   });
-
   //Joining a session
   socket.on("join_session", (sessionData, userData) => {
     console.log(sessionData, userData);
@@ -77,15 +57,29 @@ io.on("connection", (socket) => {
       `${userData} has ${sessionData}'s session!`
     );
   });
-
   //Closing a session
   socket.on("exit_session", (sessionData, userData) => {
-    console.log(userData + ' are leaving ' + sessionData)
+    console.log(userData + " are leaving " + sessionData);
     const indexToRemove = activeSessions.indexOf(sessionData); //Find matching index
     activeSessions.splice(indexToRemove, 1); //Remove from activeSessions
     io.emit("getActiveSessions", activeSessions);
-    socket.leave(sessionData)
+    // socket.leave(sessionData);
+    // socket.leave(userData);
     io.to(sessionData).emit("exit-room");
+  });
+
+  //SimplePeer
+
+  //Calling a peer
+  socket.on("callUser", (data) => {
+    io.to(data.userToCall).emit("hey", {
+      signal: data.signalData,
+      from: data.from,
+    });
+  });
+  //Getting a call from another peer
+  socket.on("acceptCall", (data) => {
+    io.to(data.to).emit("callAccepted", data.signal);
   });
 });
 
