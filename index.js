@@ -14,7 +14,7 @@ const io = new Server(server, {
   },
 });
 
-//Middleware 
+//Middleware
 app.use(cors());
 
 //Active Sessions
@@ -24,44 +24,69 @@ const activeSessions = [];
 io.on("connection", (socket) => {
   //Test
   console.log(`User connected: ${socket.id}`);
-  socket.on('send message', (data) => {
-    socket.broadcast.emit('receive message', data)
-  })
+  socket.on("send message", (data) => {
+    socket.broadcast.emit("receive message", data);
+  });
+
   //Send socketid
   socket.emit("me", socket.id);
-
   //Send activeSessions list
-  socket.emit('startingActiveSessions', activeSessions);
-
+  socket.emit("getActiveSessions", activeSessions);
   //Notify all other users
-  socket.broadcast.emit('userOnline', `New user online: ${socket.id}`);
+  socket.broadcast.emit("userOnline", `New user online: ${socket.id}`);
   //Disconnect
-	socket.on("disconnect", () => {
-		socket.broadcast.emit("callEnded")
-	});
+  socket.on("disconnect", () => {
+    socket.emit("call has ended");
+  });
+
+  //Call a user
+  // socket.on("callUser", (data) => {
+  //   io.to(data.userToCall).emit("callUser", {
+  //     signal: data.signalData,
+  //     from: data.from,
+  //     name: data.name,
+  //   });
+  // });
+
+  // //Answer call
+  // socket.on("answerCall", (data) => {
+  //   io.to(data.to).emit("call accepted", data.signal);
+  // });
+
+  //Creating a session
+  socket.on("create_session", (data) => {
+    if (
+      !activeSessions.find((session) => {
+        return session === data;
+      })
+    ) {
+      activeSessions.push(data);
+    }
+    socket.join(data); //Creates room
+    io.emit("getActiveSessions", activeSessions);
+  });
 
   //Joining a session
-  socket.on('join_session', (data) => {
-    console.log(`new session created: ${data}`)
-    activeSessions.push(data) //Add this session to list of active sessions
-    console.log(activeSessions);
-    socket.join(data);  //Creates room
-    //Return list of rooms to user
-    socket.emit('getActiveSessions', activeSessions);
-  })
+  socket.on("join_session", (sessionData, userData) => {
+    console.log(sessionData, userData);
+    socket.join(sessionData);
+    io.to(sessionData).emit(
+      "join-confirm",
+      userData,
+      sessionData,
+      `${userData} has ${sessionData}'s session!`
+    );
+  });
+
   //Closing a session
-  socket.on('exit_session', (data) => {
-    console.log(activeSessions.indexOf(data));
-    console.log(`session closed: ${data}`);
-    console.log(activeSessions);
-  })
-
-  //Sending data only to those connected in a room
-  //use .to() to specify which room/channel and emit to send
-  socket.on('send message', (data) => {
-    socket.to(data.room).emit('receive message', data);
-  })
-
+  socket.on("exit_session", (sessionData, userData) => {
+    console.log(userData + ' are leaving ' + sessionData)
+    const indexToRemove = activeSessions.indexOf(sessionData); //Find matching index
+    activeSessions.splice(indexToRemove, 1); //Remove from activeSessions
+    io.emit("getActiveSessions", activeSessions);
+    socket.leave(sessionData)
+    io.to(sessionData).emit("exit-room");
+  });
 });
 
 //Home route
