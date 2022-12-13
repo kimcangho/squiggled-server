@@ -7,6 +7,7 @@ const app = express();
 const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
+// const { isObject } = require("util");
 const io = new Server(server, {
   cors: {
     origin: "*",
@@ -63,7 +64,7 @@ io.on("connection", (socket) => {
     const indexToRemove = activeSessions.indexOf(sessionData); //Find matching index
     activeSessions.splice(indexToRemove, 1); //Remove from activeSessions
     io.emit("getActiveSessions", activeSessions);
-    // socket.leave(sessionData);
+    socket.leave(sessionData);
     // socket.leave(userData);
     io.to(sessionData).emit("exit-room");
   });
@@ -81,6 +82,13 @@ io.on("connection", (socket) => {
   socket.on("acceptCall", (data) => {
     io.to(data.to).emit("callAccepted", data.signal);
   });
+
+  //Capture Photo
+  socket.on('send_screenshot', (data,session) => {
+    console.log(`Photo taken of session:`)
+    console.log(session);
+    io.to(session).emit('confirm_screenshot', 'we got it!', data)
+  })
 });
 
 //Home route
