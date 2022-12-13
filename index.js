@@ -86,7 +86,7 @@ io.on("connection", (socket) => {
   socket.on('send_screenshot', (data,session) => {
     console.log(`Photo taken of session:`)
     console.log(session);
-    io.to(session).emit('confirm_screenshot', 'we got it!', data)
+    io.to(session).emit('confirm_screenshot', data)
   })
 });
 
