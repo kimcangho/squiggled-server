@@ -72,7 +72,7 @@ io.on("connection", (socket) => {
 
   //Calling a peer
   socket.on("callUser", (data) => {
-    io.to(data.userToCall).emit("hey", {
+    io.to(data.userToCall).emit("sendCall", {
       signal: data.signalData,
       from: data.from,
     });
