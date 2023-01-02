@@ -17,10 +17,16 @@ const io = new Server(server, {
   },
 });
 
+//Listen on server connection
 io.on("connection", (socket) => {
-    console.log(socket)
-})
+  console.log(`User with socket id ${socket} has connected`);
+
+  //Listen for user disconnect event
+  socket.on("disconnect", () => {
+    console.log(`User with socket id ${socket} has disconnected`);
+  });
+});
 
 server.listen(PORT, () => {
-    console.log(`Listening to server PORT:${PORT}`)
-})
+  console.log(`Listening to server PORT:${PORT}`);
+});
