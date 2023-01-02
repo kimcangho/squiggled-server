@@ -16,15 +16,32 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
+//Other Modules
+const { v4: uuidv4 } = require("uuid");
 
 //Listen on server connection
 io.on("connection", (socket) => {
-  console.log(`User with socket id ${socket} has connected`);
-
+  //Connection/Disconnection
+  console.log(`User with socket id ${socket.id} has connected`);
   //Listen for user disconnect event
   socket.on("disconnect", () => {
-    console.log(`User with socket id ${socket} has disconnected`);
+    console.log(`User with socket id ${socket.id} has disconnected`);
   });
+
+  //Room Handlers
+  // roomHandler(socket);
+  const createRoom = () => {
+    const roomId = uuidv4();
+    socket.join(roomId);
+    socket.emit("room-created", { roomId });
+    console.log("user has created room!");
+  };
+  const joinRoom = ({ roomId }) => {
+    console.log(`user has joined room ${roomId}`);
+  };
+  //Socket Room Listeners
+  socket.on("create-room", createRoom);
+  socket.on("join-room", joinRoom);
 });
 
 server.listen(PORT, () => {
