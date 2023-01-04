@@ -6,7 +6,6 @@ const roomsArr = {};
 
 //Handle create/join/leave room events
 const roomHandler = (socket) => {
-
   const createRoom = () => {
     const roomId = uuidV4(); //Generate random id
     roomsArr[roomId] = []; //Create room key with empty array value
@@ -16,8 +15,8 @@ const roomHandler = (socket) => {
   };
 
   const joinRoom = ({ roomId, peerId }) => {
-    //Handle room larger than 2
-    if (roomsArr[roomId].length > 2) {
+    //Cap room size at 2 participants
+    if (roomsArr[roomId].length >= 2) {
       console.log("cruckets");
       socket.emit("room-full", roomId);
     }
@@ -25,9 +24,12 @@ const roomHandler = (socket) => {
     //Check if room exists
     if (roomsArr[roomId]) {
       console.log(`user ${peerId} has joined room ${roomId}`);
+
       roomsArr[roomId].push(peerId); //Add peer to room
       socket.join(roomId); //User joins room
-         //Send back roomId and its array of participants
+      socket.to(roomId).emit("user-joined", { peerId }); //Emit event to other users in room
+      
+      //Send back roomId and its array of participants
       socket.emit("get-users", {
         roomId,
         participants: roomsArr[roomId],
@@ -41,15 +43,14 @@ const roomHandler = (socket) => {
   };
 
   const leaveRoom = ({ roomId, peerId }) => {
-    roomsArr[roomId] = roomsArr[roomId].filter((id) => id !== peerId);  //Filter out peer that leaves
-    socket.to(roomId).emit("user-disconnected", peerId);    //emit to all others in room
+    roomsArr[roomId] = roomsArr[roomId].filter((id) => id !== peerId); //Filter out peer that leaves
+    socket.to(roomId).emit("user-disconnected", peerId); //emit to all others in room
   };
 
   //Socket Room Listeners
   socket.on("create-room", createRoom);
   socket.on("join-room", joinRoom);
-  socket.on('leave-room', leaveRoom);
-
+  socket.on("leave-room", leaveRoom);
 };
 
 module.exports = roomHandler;
