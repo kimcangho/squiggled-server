@@ -33,7 +33,7 @@ io.on("connection", (socket) => {
   //Handlers
   roomHandler(socket);
   whiteboardHandler(socket);
-  
+
 });
 
 server.listen(PORT, () => {
