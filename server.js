@@ -18,19 +18,22 @@ const io = new Server(server, {
 });
 
 //Other Modules
-const roomHandler = require("./roomHandler/roomHandler.js");
+const roomHandler = require("./handlers/roomHandler.js");
+const whiteboardHandler = require("./handlers/whiteboardHandler.js");
 
 //Listen on server connection
-io.on("connection", (socket, io) => {
+io.on("connection", (socket) => {
+
   //Connection/Disconnection
   console.log(`User with socket id ${socket.id} has connected`);
-
-
   socket.on("disconnect", () => {
     console.log(`User with socket id ${socket.id} has disconnected`);
   });
-  //Room Handler
+
+  //Handlers
   roomHandler(socket);
+  whiteboardHandler(socket);
+  
 });
 
 server.listen(PORT, () => {

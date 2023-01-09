@@ -60,30 +60,6 @@ const roomHandler = (socket) => {
   socket.on("join-room", joinRoom);
   socket.on("leave-room", leaveRoom);
 
-  //Send screenshot
-  socket.on("send-screenshot", (roomId, drawnImage) => {
-    console.log(drawnImage);
-    console.log("roomId: " + roomId);
-    socket.to(roomId).emit("transmit-screenshot", drawnImage);
-  });
-
-  //Send whiteboard
-  socket.on("send-whiteboard", (roomId, sketchedImage) => {
-    console.log(sketchedImage);
-    socket.to(roomId).emit("transmit-whiteboard", sketchedImage);
-  });
-
-  //Send erase
-  socket.on("send-erase", (roomId) => {
-    console.log('erasies')
-    socket.to(roomId).emit('transmit-erase');
-  })
-
-  //Send clear
-  socket.on("send-clear", (roomId) => {
-    console.log('clearance')
-    socket.to(roomId).emit('transmit-clear');
-  })
 };
 
 module.exports = roomHandler;
