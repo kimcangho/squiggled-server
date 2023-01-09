@@ -21,9 +21,11 @@ const io = new Server(server, {
 const roomHandler = require("./roomHandler/roomHandler.js");
 
 //Listen on server connection
-io.on("connection", (socket) => {
+io.on("connection", (socket, io) => {
   //Connection/Disconnection
   console.log(`User with socket id ${socket.id} has connected`);
+
+
   socket.on("disconnect", () => {
     console.log(`User with socket id ${socket.id} has disconnected`);
   });
