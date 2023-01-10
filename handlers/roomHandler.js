@@ -16,11 +16,9 @@ const roomHandler = (socket) => {
 
   const joinRoom = ({ roomId, peerId }) => {
     //Cap room size at 2 participants
-
-    // if (roomsArr[roomId].length >= 2) {
-    //   console.log("cruckets");
-    //   socket.emit("room-full", roomId);
-    // }
+    if (roomsArr[roomId].length >= 2) {
+      socket.emit("room-full", roomId);
+    }
 
     //Check if room exists
     if (roomsArr[roomId]) {
@@ -39,7 +37,6 @@ const roomHandler = (socket) => {
 
     socket.on("disconnect", () => {
       console.log(`user ${peerId} has left the room`);
-      // leaveRoom({ roomId, peerId });
     });
   };
 
@@ -48,7 +45,7 @@ const roomHandler = (socket) => {
     socket.to(roomId).emit("user-disconnected", peerId); //emit to all others in room
   };
 
-  const emptyRoom = ({ roomId }) => {
+  const emptyRoom = (roomId) => {
     socket.to(roomId).emit("empty-room");
   };
 
@@ -57,7 +54,6 @@ const roomHandler = (socket) => {
   socket.on("join-room", joinRoom);
   socket.on("leave-room", leaveRoom);
   socket.on("empty-room", emptyRoom);
-  
 };
 
 module.exports = roomHandler;

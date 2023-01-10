@@ -17,7 +17,7 @@ const io = new Server(server, {
   },
 });
 
-//Other Modules
+//Handler Modules
 const roomHandler = require("./handlers/roomHandler.js");
 const whiteboardHandler = require("./handlers/whiteboardHandler.js");
 
