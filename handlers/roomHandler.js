@@ -10,13 +10,13 @@ const roomHandler = (socket) => {
     const roomId = uuidV4(); //Generate random id
     roomsArr[roomId] = []; //Create room key with empty array value
     socket.join(roomId); //User joins room
-    socket.emit("room-created", { roomId }); //Emit to client
+    socket.emit("room-created", { roomId, name }); //Emit to client
     console.log("user has created room!");
   };
 
   const joinRoom = ({ roomId, peerId }) => {
     //Cap room size at 2 participants
-    if (roomsArr[roomId].length >= 2) {
+    if (roomsArr[roomId].length > 2) {
       socket.emit("room-full", roomId);
     }
 
