@@ -48,6 +48,7 @@ const roomHandler = (socket) => {
 
   const emptyRoom = (roomId) => {
     socket.to(roomId).emit("empty-room");
+    delete roomsArr[roomId];
   };
 
   //Socket Room Listeners
@@ -69,4 +70,4 @@ const roomHandler = (socket) => {
   // })
 };
 
-module.exports = roomHandler;
+module.exports = roomHandler, roomsArr;
