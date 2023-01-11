@@ -6,12 +6,13 @@ const roomsArr = {};
 
 //Handle create/join/leave room events
 const roomHandler = (socket) => {
+
   const createRoom = (name) => {
     const roomId = uuidV4(); //Generate random id
     roomsArr[roomId] = []; //Create room key with empty array value
     socket.join(roomId); //User joins room
     socket.emit("room-created", { roomId, name }); //Emit to client
-    console.log("user has created room!");
+    console.log(`user ${name} has created room!`);
   };
 
   const joinRoom = ({ roomId, peerId }) => {
@@ -54,6 +55,18 @@ const roomHandler = (socket) => {
   socket.on("join-room", joinRoom);
   socket.on("leave-room", leaveRoom);
   socket.on("empty-room", emptyRoom);
+  
+  // socket.on('peer-joining', ({id, myUsername}) => {
+  //   console.log(`Room Id: ${id}`)
+  //   console.log(`We have a new challenger: ${myUsername}`);
+  //   socket.to(id).emit('transmit-peer-joining', myUsername);
+  // })
+
+  // socket.on('set-host-username', (hostname, roomId) => {
+  //   console.log('myusername below')
+  //   console.log(roomId);
+  //   console.log(hostname)
+  // })
 };
 
 module.exports = roomHandler;
