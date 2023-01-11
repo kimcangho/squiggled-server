@@ -10,12 +10,10 @@ const whiteboardHandler = (socket) => {
   };
   //Send clear screenshot
   const sendClear = (roomId) => {
-    console.log('clearing')
     socket.to(roomId).emit("transmit-clear");
   };
   //Send erase whiteboard
   const sendErase = (roomId) => {
-    console.log('erasing')
     socket.to(roomId).emit("transmit-erase");
   };
 
