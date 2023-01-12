@@ -12,19 +12,12 @@ const roomHandler = (socket) => {
     roomsArr[roomId] = []; //Create room key with empty array value
     socket.join(roomId); //User joins room
     socket.emit("room-created", { roomId, name }); //Emit to client
-    console.log(`user ${name} has created room!`);
   };
 
   const joinRoom = ({ roomId, peerId }) => {
-    //Cap room size at 2 participants
-    if (roomsArr[roomId].length > 2) {
-      socket.emit("room-full", roomId);
-    }
 
     //Check if room exists
     if (roomsArr[roomId]) {
-      console.log(`user ${peerId} has joined room ${roomId}`);
-
       roomsArr[roomId].push(peerId); //Add peer to room
       socket.join(roomId); //User joins room
       socket.to(roomId).emit("user-joined", { peerId, roomId }); //Emit event to other users in room
@@ -56,18 +49,7 @@ const roomHandler = (socket) => {
   socket.on("join-room", joinRoom);
   socket.on("leave-room", leaveRoom);
   socket.on("empty-room", emptyRoom);
-  
-  // socket.on('peer-joining', ({id, myUsername}) => {
-  //   console.log(`Room Id: ${id}`)
-  //   console.log(`We have a new challenger: ${myUsername}`);
-  //   socket.to(id).emit('transmit-peer-joining', myUsername);
-  // })
 
-  // socket.on('set-host-username', (hostname, roomId) => {
-  //   console.log('myusername below')
-  //   console.log(roomId);
-  //   console.log(hostname)
-  // })
 };
 
 module.exports = roomHandler, roomsArr;
