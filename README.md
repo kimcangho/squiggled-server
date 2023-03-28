@@ -5,6 +5,8 @@
 
 Squiggled is a whiteboarding application that enables users to capture, annotate, share and download screenshots from their device camera to other users in real-time.
 
+Written in Node.js using the Express framework, with socket.io for WebSocket implementation.
+
 Check out the client in this repository (https://github.com/kimcangho/squiggled-client).
 
 Production build deployed on Heroku. See squiggled-client repository for frontend details.
