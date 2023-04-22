@@ -1,21 +1,22 @@
 //ENV
 require("dotenv").config();
-const PORT = process.env.PORT;
+const PORT = process.env.SERVER_PORT || 8080;
+
 //Express Server
 const express = require("express");
 const app = express();
+
+app.get('/', (_req,res) => {
+  res.send('test')
+})
+
 //HTTP Server
 const http = require("http");
 const server = http.createServer(app);
 //Websocket Server for Web Signaling
 const cors = require("cors");
 const { Server } = require("socket.io");
-const io = new Server(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-  },
-});
+const io = new Server(server, {cors: {}});
 
 //Handler Modules
 const roomHandler = require("./handlers/roomHandler.js");
