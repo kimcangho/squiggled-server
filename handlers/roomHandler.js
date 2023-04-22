@@ -30,7 +30,8 @@ const roomHandler = (socket) => {
     }
 
     socket.on("disconnect", () => {
-      console.log(`user ${peerId} has left the room`);
+      // console.log(`user ${peerId} has left the room`);
+      console.log('A user has disconnected from a room!')
     });
   };
 
